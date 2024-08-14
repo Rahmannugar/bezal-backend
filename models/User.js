@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     min: 2,
     max: 50,
+    unique: true,
   },
   email: {
     type: String,
@@ -30,28 +31,36 @@ const userSchema = new mongoose.Schema({
     required: true,
     min: 5,
   },
-  picturePath: {
+  profileImage: {
+    type: String,
+    default: "https://i.ibb.co/4sCN8rm/bezal.png",
+  },
+  coverImage: {
     type: String,
     default: "https://i.ibb.co/4sCN8rm/bezal.png",
   },
   bio: {
     type: String,
-    min: 5,
+    default: "",
   },
-  follows: {
-    type: Array,
-    default: [],
-  },
-  followers: {
-    type: Array,
-    default: [],
-  },
-  posts: {
+
+  userFollows: {
     type: Array,
     default: [],
   },
 
-  location: String,
+  userFollowers: {
+    type: Array,
+    default: [],
+  },
+  userPosts: {
+    type: Array,
+    default: [],
+  },
+  location: {
+    type: String,
+    default: "",
+  },
 });
 
 const User = mongoose.model("User", userSchema);
