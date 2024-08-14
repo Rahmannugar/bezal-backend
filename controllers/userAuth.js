@@ -40,33 +40,48 @@ export const signup = async (req, res) => {
 //signin function
 export const signin = async (req, res) => {
   const { email, password } = req.body;
+
   try {
-    //finding existing user
+    // Finding existing user
     const existingUser = await User.findOne({ email });
-    if (!existingUser)
+    if (!existingUser) {
       return res.status(400).json({ message: "User does not exist!" });
+    }
 
-    //checkingpassword
-    const isPassword = await bcrypt.compare(password, existingUser.password);
-    if (!isPassword)
-      return res.status(400).json({ message: "Password is incorrect! " });
+    // Checking password
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      existingUser.password
+    );
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Password is incorrect!" });
+    }
 
-    //creating usersession
-    res
-      .status(201)
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== "development",
-        sameSite: "strict",
-        maxAge: 3 * 60 * 60 * 1000, // 3 hours
-      })
-      .json(existingUser);
+    // Generating token
+    const token = jwt.sign(
+      { id: existingUser._id, email: existingUser.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "3h" }
+    );
 
-    //error catching
+    // Creating user session (setting the cookie)
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      sameSite: "strict",
+      maxAge: 3 * 60 * 60 * 1000, // 3 hours
+    });
+
+    // Removing password from user data before sending the response
+    const userData = existingUser.toObject();
+    delete userData.password;
+
+    // Sending response with user data
+    res.status(201).json(userData);
   } catch (error) {
+    console.error("Error during user signin:", error); // Log the actual error for debugging
     res.status(500).json({ message: "User Signin has failed!" });
   }
 };
-
 //forgotPassword function
 export const forgotPassword = (req, res) => {};
