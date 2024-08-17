@@ -33,15 +33,19 @@ const userSchema = new mongoose.Schema({
   },
   profileImage: {
     type: String,
-    default: "https://i.ibb.co/4sCN8rm/bezal.png",
+    default: "https://i.ibb.co/KsMc2Qn/bezal.png",
   },
   coverImage: {
     type: String,
-    default: "https://i.ibb.co/4sCN8rm/bezal.png",
+    default: "https://i.ibb.co/KsMc2Qn/bezal.png",
   },
   bio: {
     type: String,
     default: "",
+  },
+  dateofBirth: {
+    type: Date,
+    default: null,
   },
 
   userFollows: {
