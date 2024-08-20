@@ -33,21 +33,26 @@ const userSchema = new mongoose.Schema({
   },
   profileImage: {
     type: String,
-    default: "https://i.ibb.co/KsMc2Qn/bezal.png",
+    default:
+      "https://firebasestorage.googleapis.com/v0/b/bezal-aa24a.appspot.com/o/files%2Fbezal.png?alt=media&token=ddfaa866-5253-494e-8538-23c20ac65391",
   },
   coverImage: {
     type: String,
-    default: "https://i.ibb.co/KsMc2Qn/bezal.png",
+    default:
+      "https://firebasestorage.googleapis.com/v0/b/bezal-aa24a.appspot.com/o/files%2Fbezal.png?alt=media&token=ddfaa866-5253-494e-8538-23c20ac65391",
   },
   bio: {
     type: String,
     default: "",
   },
-  dateofBirth: {
-    type: Date,
-    default: null,
+  dateOfBirth: {
+    type: String,
+    default: "",
   },
-
+  isDatePublic: {
+    type: Boolean,
+    default: false,
+  },
   userFollows: {
     type: Array,
     default: [],
