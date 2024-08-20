@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 //App configuration
 const app = express();
@@ -13,7 +14,7 @@ app.use(
     credentials: true,
   })
 );
-
+app.use(cookieParser());
 app.use(bodyParser.json());
 dotenv.config();
 

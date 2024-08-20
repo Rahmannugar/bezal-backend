@@ -77,7 +77,7 @@ export const signin = async (req, res) => {
     // Creating user session (setting the cookie)
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 3 * 60 * 60 * 1000, // 3 hours
     });
@@ -100,6 +100,13 @@ export const editUser = async (req, res) => {
   const updates = req.body;
 
   try {
+    // Check if the user making the request is the same as the user being updated
+    if (req.user.id !== userId) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to update this profile" });
+    }
+
     // Find the user by ID and update with the provided fields
     const updatedUser = await User.findByIdAndUpdate(userId, updates, {
       new: true,
@@ -145,7 +152,6 @@ export const searchUsers = async (req, res) => {
 export const getUser = async (req, res) => {
   try {
     const { userName } = req.params;
-
     const user = await User.findOne({ userName });
 
     if (!user) {
@@ -164,14 +170,23 @@ export const getUser = async (req, res) => {
 export const followUser = async (req, res) => {
   try {
     const { userName } = req.params;
-    const { loggedInUserName } = req.body;
+    const loggedInUserId = req.user.id;
 
     // Find the user to follow/unfollow
     const user = await User.findOne({ userName });
-    const loggedInUser = await User.findOne({ userName: loggedInUserName });
+    if (!user) {
+      return res.status(404).send("User to follow/unfollow not found");
+    }
 
-    if (!user || !loggedInUser) {
-      return res.status(404).send("User not found");
+    //verify loggedinuser
+    const loggedInUser = await User.findById(loggedInUserId);
+    if (!loggedInUser) {
+      return res.status(404).send("Logged-in user not found");
+    }
+
+    // Check if the authenticated user is attempting to follow/unfollow themselves
+    if (loggedInUser.userName === user.userName) {
+      return res.status(400).send("You cannot follow or unfollow yourself");
     }
 
     const isFollowing = loggedInUser.userFollows.includes(user._id);

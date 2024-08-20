@@ -8,14 +8,17 @@ import {
   getUser,
   followUser,
 } from "../controllers/userAuth.js";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
 router.post("/signup", signup);
 router.post("/signin", signin);
-router.patch("/users/:userId", editUser);
 router.get("/users/search", searchUsers);
 router.get("/users/:userName", getUser);
-router.put("/users/:userName/follow", followUser);
+
+// Protected routes
+router.patch("/users/:userId", verifyToken, editUser);
+router.put("/users/:userName/follow", verifyToken, followUser);
 
 export default router;
