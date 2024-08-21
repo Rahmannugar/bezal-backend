@@ -219,5 +219,32 @@ export const followUser = async (req, res) => {
   }
 };
 
+// Get followers and follows details
+export const getUserFollowersAndFollows = async (req, res) => {
+  try {
+    const { userName } = req.params;
+
+    const user = await User.findOne({ userName });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Populate userFollowers and userFollows with full user details
+    const followers = await User.find({
+      _id: { $in: user.userFollowers },
+    }).select("userName profileImage");
+    const follows = await User.find({ _id: { $in: user.userFollows } }).select(
+      "userName profileImage"
+    );
+
+    res.status(200).json({
+      followers,
+      follows,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching followers and follows" });
+  }
+};
+
 //forgotPassword function
 export const forgotPassword = (req, res) => {};
