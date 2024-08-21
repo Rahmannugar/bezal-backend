@@ -3,23 +3,18 @@ import {
   commentPost,
   createPost,
   deletePost,
-  getPost,
+  getUserPosts,
   getPosts,
-  getPostsBySearch,
   likePost,
   updatePost,
 } from "../controllers/posts.js";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/", getPosts);
-router.get("/search", getPostsBySearch);
-router.get("/:id", getPost);
-
-router.post("/", createPost);
-router.patch("/:id", updatePost);
-router.delete("/:id", deletePost);
-router.patch("/:id/likePost", likePost);
-router.post("/:id/commentPost", commentPost);
+router.get("/posts", getPosts);
+router.get("/userpost/:username", getUserPosts);
+// Protected routes
+router.post("/createpost/:userId", verifyToken, createPost);
 
 export default router;
