@@ -41,10 +41,24 @@ export const getPosts = async (req, res) => {
   }
 };
 
+export const getPost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    post.views++;
+    await post.save();
+    res.status(200).json(post);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch post" });
+  }
+};
+
 export const getUserPosts = async (req, res) => {
   try {
-    const { userName } = req.params;
-    const user = await User.findOne({ userName });
+    const { username } = req.params;
+    const user = await User.findOne({ userName: username });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -54,13 +68,53 @@ export const getUserPosts = async (req, res) => {
     res.status(200).json(userPosts);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "failed to fetch user posts" });
+    res.status(500).json({ message: "Failed to fetch user posts" });
   }
 };
 
 export const updatePost = async (req, res) => {};
 
-export const deletePost = async (req, res) => {};
+export const deletePost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user.id;
+    const post = await Post.findById(postId);
+    const user = await User.findById(userId);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (post.userId.toString() !== userId) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const userIds = Array.from(
+      new Set([...post.likes.keys(), ...post.dislikes.keys()])
+    );
+    await User.updateMany(
+      { _id: { $in: userIds } },
+      {
+        $unset: { [`likes.${postId}`]: 1, [`dislikes.${postId}`]: 1 },
+      }
+    );
+
+    await Post.findByIdAndDelete(postId);
+
+    user.userPosts = user.userPosts.filter(
+      (userPost) => userPost._id.toString() !== postId
+    );
+
+    await user.save();
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to delete the post" });
+  }
+};
 
 export const likePost = async (req, res) => {
   try {
