@@ -19,9 +19,27 @@ const postSchema = new mongoose.Schema(
       default: [],
     },
     userPicturePath: String,
+    views: {
+      type: Number,
+      default: 0,
+    },
+    isPublic: {
+      type: Boolean,
+      default: true,
+    },
+    isEdited: {
+      type: Boolean,
+      default: false,
+    },
     likes: {
       type: Map,
       of: Boolean,
+      default: {},
+    },
+    dislikes: {
+      type: Map,
+      of: Boolean,
+      default: {},
     },
     comments: {
       type: Array,

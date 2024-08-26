@@ -62,6 +62,20 @@ const userSchema = new mongoose.Schema({
     type: Array,
     default: [],
   },
+  likes: {
+    type: Map,
+    of: Boolean,
+    default: {},
+  },
+  dislikes: {
+    type: Map,
+    of: Boolean,
+    default: {},
+  },
+  comments: {
+    type: Array,
+    default: [],
+  },
   userPosts: {
     type: Array,
     default: [],

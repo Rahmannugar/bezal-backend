@@ -94,6 +94,21 @@ export const signin = async (req, res) => {
   }
 };
 
+//Verify user function
+export const verifyUser = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const existingUser = await User.findById(userId);
+    if (!existingUser) {
+      return res.status(400).json({ message: "User does not exist!" });
+    }
+    res.status(200).json(existingUser);
+  } catch (error) {
+    console.error("Token has expired", error);
+    res.status(500).json({ message: "Token has expired" });
+  }
+};
+
 // Edit user function
 export const editUser = async (req, res) => {
   const { userId } = req.params;

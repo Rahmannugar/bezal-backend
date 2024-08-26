@@ -8,6 +8,7 @@ import {
   getUser,
   followUser,
   getUserFollowersAndFollows,
+  verifyUser,
 } from "../controllers/userAuth.js";
 import { verifyToken } from "../middleware/auth.js";
 
@@ -20,6 +21,7 @@ router.get("/users/:userName", getUser);
 router.get("/users/following/:userName", getUserFollowersAndFollows);
 
 // Protected routes
+router.get("/verify/:userId", verifyToken, verifyUser);
 router.patch("/users/:userId", verifyToken, editUser);
 router.put("/users/:userName/follow", verifyToken, followUser);
 
