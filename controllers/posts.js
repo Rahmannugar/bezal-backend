@@ -182,7 +182,7 @@ export const commentPost = async (req, res) => {
   try {
     const { postId } = req.params;
     const userId = req.user.id;
-    const { commentMessage, picturePath } = req.body;
+    const { commentMessage } = req.body;
     const post = await Post.findById(postId);
     const user = await User.findById(userId);
     if (!post) {
@@ -192,7 +192,6 @@ export const commentPost = async (req, res) => {
       userName: user.userName,
       commentMessage,
       userPicturePath: user.profileImage,
-      picturePath,
     });
     const savedComment = newComment.save();
     post.comments.push(savedComment);
