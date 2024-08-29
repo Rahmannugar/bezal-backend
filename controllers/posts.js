@@ -72,8 +72,6 @@ export const getUserPosts = async (req, res) => {
   }
 };
 
-export const updatePost = async (req, res) => {};
-
 export const deletePost = async (req, res) => {
   try {
     const { postId } = req.params;
@@ -180,4 +178,28 @@ export const dislikePost = async (req, res) => {
   }
 };
 
-export const commentPost = async (req, res) => {};
+export const commentPost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user.id;
+    const { commentMessage, picturePath } = req.body;
+    const post = await Post.findById(postId);
+    const user = await User.findById(userId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const newComment = new Comment({
+      userName: user.userName,
+      commentMessage,
+      userPicturePath: user.profileImage,
+      picturePath,
+    });
+    const savedComment = newComment.save();
+    post.comments.push(savedComment);
+
+    res.status(200).json(savedComment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to comment" });
+  }
+};
