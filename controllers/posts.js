@@ -1,5 +1,6 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import Comment from "../models/Comment.js";
 
 //creating post
 export const createPost = async (req, res) => {
@@ -89,6 +90,8 @@ export const deletePost = async (req, res) => {
     if (post.userId.toString() !== userId) {
       return res.status(403).json({ message: "Unauthorized" });
     }
+
+    await Comment.deleteMany({ postId });
 
     const userIds = Array.from(
       new Set([...post.likes.keys(), ...post.dislikes.keys()])
@@ -189,13 +192,16 @@ export const commentPost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
     const newComment = new Comment({
+      postId,
+      userId,
       userName: user.userName,
-      commentMessage,
       userPicturePath: user.profileImage,
+      commentMessage: commentMessage,
     });
-    const savedComment = newComment.save();
-    post.comments.push(savedComment);
+    const savedComment = await newComment.save();
+    post.comments.unshift(savedComment);
 
+    await post.save();
     res.status(200).json(savedComment);
   } catch (error) {
     console.error(error);

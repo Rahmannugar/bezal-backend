@@ -14,7 +14,14 @@ const commentSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    commentMessage: String,
+    userPicturePath: {
+      type: String,
+      required: true,
+    },
+    commentMessage: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
