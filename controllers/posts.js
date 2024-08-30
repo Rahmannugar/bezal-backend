@@ -142,6 +142,7 @@ export const likePost = async (req, res) => {
     }
 
     const updatedPost = await post.save();
+    const savedUser = await user.save();
     res.status(200).json(updatedPost);
   } catch (error) {
     console.error(error);
@@ -174,6 +175,7 @@ export const dislikePost = async (req, res) => {
     }
 
     const updatedPost = await post.save();
+    const savedUser = await user.save();
     res.status(200).json(updatedPost);
   } catch (error) {
     console.error(error);
