@@ -87,7 +87,11 @@ export const signin = async (req, res) => {
     delete userData.password;
 
     // Sending response with user data
-    res.status(200).json(userData);
+    res.status(200).json({
+      ...userData,
+      likes: existingUser.likes,
+      dislikes: existingUser.dislikes,
+    });
   } catch (error) {
     console.error("Error during user signin:", error); // Log the actual error for debugging
     res.status(500).json({ message: "User Signin has failed!" });

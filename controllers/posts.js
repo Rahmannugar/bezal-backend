@@ -65,7 +65,9 @@ export const getUserPosts = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     // Send user posts as a response
-    const userPosts = user.userPosts;
+    const userPosts = await Post.find({ userId: user._id }).sort({
+      createdAt: -1,
+    });
     res.status(200).json(userPosts);
   } catch (error) {
     console.error(error);
