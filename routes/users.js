@@ -9,6 +9,7 @@ import {
   followUser,
   getUserFollowersAndFollows,
   verifyUser,
+  resetPassword,
 } from "../controllers/userAuth.js";
 import { verifyToken } from "../middleware/auth.js";
 
@@ -19,6 +20,8 @@ router.post("/signin", signin);
 router.get("/users/search", searchUsers);
 router.get("/users/:userName", getUser);
 router.get("/users/following/:userName", getUserFollowersAndFollows);
+router.post("/forgotPassword", forgotPassword);
+router.post("/reset-password/:token", resetPassword);
 
 // Protected routes
 router.get("/verify/:userId", verifyToken, verifyUser);
