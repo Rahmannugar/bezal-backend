@@ -21,7 +21,7 @@ router.get("/users/search", searchUsers);
 router.get("/users/:userName", getUser);
 router.get("/users/following/:userName", getUserFollowersAndFollows);
 router.post("/forgotPassword", forgotPassword);
-router.post("/reset-password/:token", resetPassword);
+router.post("/resetpassword/:token", resetPassword);
 
 // Protected routes
 router.get("/verify/:userId", verifyToken, verifyUser);
