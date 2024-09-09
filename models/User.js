@@ -84,13 +84,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-  notifications: {
-    type: Array,
-    default: [],
-  },
+  notifications: [
+    {
+      image: String,
+      msg: String,
+      read: { type: Boolean, default: false },
+      name: String,
+      createdAt: Date,
+    },
+  ],
   readNotifications: {
     type: Boolean,
-    default: false,
+    default: true,
   },
 });
 

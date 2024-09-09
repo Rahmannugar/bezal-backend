@@ -156,6 +156,7 @@ export const likePost = async (req, res) => {
           createdAt: new Date(),
         });
 
+        postAuthor.readNotifications = false;
         await user.save();
         await postAuthor.save();
 
@@ -164,6 +165,7 @@ export const likePost = async (req, res) => {
           msg: `${user.userName} liked your post!`,
           postUrl: postId,
           name: user.userName,
+          createdAt: new Date(),
         });
       }
     }
@@ -211,6 +213,7 @@ export const dislikePost = async (req, res) => {
           createdAt: new Date(),
         });
 
+        postAuthor.readNotifications = false;
         await user.save();
         await postAuthor.save();
 
@@ -219,6 +222,7 @@ export const dislikePost = async (req, res) => {
           msg: `${user.userName} disliked your post!`,
           postUrl: postId,
           name: user.userName,
+          createdAt: new Date(),
         });
       }
     }
@@ -261,7 +265,9 @@ export const commentPost = async (req, res) => {
         msg: `${user.userName} commented on your post!`,
         read: false,
         name: user.userName,
+        createdAt: new Date(),
       });
+      postAuthor.readNotifications = false;
       await post.save();
       await postAuthor.save();
 

@@ -10,6 +10,8 @@ import {
   getUserFollowersAndFollows,
   verifyUser,
   resetPassword,
+  readSingularNotification,
+  readAllNotifications,
 } from "../controllers/userAuth.js";
 import { verifyToken } from "../middleware/auth.js";
 
@@ -27,5 +29,15 @@ router.post("/resetpassword/:token", resetPassword);
 router.get("/verify/:userId", verifyToken, verifyUser);
 router.patch("/users/:userId", verifyToken, editUser);
 router.put("/users/:userName/follow", verifyToken, followUser);
+router.patch(
+  "/notifications/readAll/:userId",
+  verifyToken,
+  readAllNotifications
+);
+router.patch(
+  "/notifications/read/:userId/:notificationId",
+  verifyToken,
+  readSingularNotification
+);
 
 export default router;

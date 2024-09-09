@@ -40,20 +40,6 @@ export const signup = async (req, res) => {
       isDatePublic,
     });
 
-    newUser.notifications.push({
-      image: newUser.profileImage,
-      msg: `Welcome to bezal, ${newUser.userName}!`,
-      read: false,
-      name: newUser.userName,
-      createdAt: new Date(),
-    });
-    const savedUser = await newUser.save();
-
-    io.emit("newNotification", {
-      msg: `Welcome to bezal, ${newUser.userName}!`,
-      image: newUser.profileImage,
-    });
-
     res.status(200).json(savedUser);
 
     //error catching
@@ -241,6 +227,7 @@ export const followUser = async (req, res) => {
         createdAt: new Date(),
       });
 
+      user.readNotifications = false;
       await loggedInUser.save();
       await user.save();
 
@@ -261,6 +248,7 @@ export const followUser = async (req, res) => {
         createdAt: new Date(),
       });
 
+      user.readNotifications = false;
       await loggedInUser.save();
       await user.save();
 
@@ -306,6 +294,58 @@ export const getUserFollowersAndFollows = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Error fetching followers and follows" });
+  }
+};
+
+//readAllNotifications function
+export const readAllNotifications = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found!" });
+    }
+
+    // Mark all notifications as read
+    user.notifications.forEach((notification) => {
+      notification.read = true;
+    });
+    user.readNotifications = true;
+
+    await user.save();
+
+    res.status(200).json({ message: "All notifications marked as read" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to mark all as read" });
+  }
+};
+
+//readNotification function
+export const readSingularNotification = async (req, res) => {
+  try {
+    const { userId, notificationId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found!" });
+    }
+
+    const notification = user.notifications.id(notificationId);
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found!" });
+    }
+
+    notification.read = true;
+
+    // Save updated user data
+    await user.save();
+
+    res.status(200).json({ message: "Notification marked as read" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to mark notification as read" });
   }
 };
 
