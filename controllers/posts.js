@@ -2,6 +2,7 @@ import Post from "../models/Post.js";
 import User from "../models/User.js";
 import Comment from "../models/Comment.js";
 import { io } from "../index.js";
+import mongoose from "mongoose";
 
 //creating post
 export const createPost = async (req, res) => {
@@ -147,26 +148,22 @@ export const likePost = async (req, res) => {
       if (postAuthor === user) {
         return;
       } else {
-        postAuthor.notifications.push({
+        const notification = {
+          _id: new mongoose.Types.ObjectId(),
           image: user.profileImage,
           msg: `${user.userName} liked your post!`,
           read: false,
           postUrl: postId,
           name: user.userName,
           createdAt: new Date(),
-        });
+        };
 
+        postAuthor.notifications.push(notification);
         postAuthor.readNotifications = false;
         await user.save();
         await postAuthor.save();
 
-        io.emit("newNotification", {
-          image: user.profileImage,
-          msg: `${user.userName} liked your post!`,
-          postUrl: postId,
-          name: user.userName,
-          createdAt: new Date(),
-        });
+        io.emit("newNotification", notification);
       }
     }
 
@@ -204,26 +201,22 @@ export const dislikePost = async (req, res) => {
       if (postAuthor === user) {
         return;
       } else {
-        postAuthor.notifications.push({
+        const notification = {
+          _id: new mongoose.Types.ObjectId(),
           image: user.profileImage,
           msg: `${user.userName} disliked your post!`,
           read: false,
           postUrl: postId,
           name: user.userName,
           createdAt: new Date(),
-        });
+        };
 
+        postAuthor.notifications.push(notification);
         postAuthor.readNotifications = false;
         await user.save();
         await postAuthor.save();
 
-        io.emit("newNotification", {
-          image: user.profileImage,
-          msg: `${user.userName} disliked your post!`,
-          postUrl: postId,
-          name: user.userName,
-          createdAt: new Date(),
-        });
+        io.emit("newNotification", notification);
       }
     }
     const updatedPost = await post.save();
@@ -260,24 +253,22 @@ export const commentPost = async (req, res) => {
     if (postAuthor === user) {
       return;
     } else {
-      postAuthor.notifications.push({
+      const notification = {
+        _id: new mongoose.Types.ObjectId(),
         image: user.profileImage,
         msg: `${user.userName} commented on your post!`,
         read: false,
+        postUrl: postId,
         name: user.userName,
         createdAt: new Date(),
-      });
+      };
+
+      postAuthor.notifications.push(notification);
       postAuthor.readNotifications = false;
       await post.save();
       await postAuthor.save();
 
-      io.emit("newNotification", {
-        image: user.profileImage,
-        msg: `${user.userName} commented on your post!`,
-        postUrl: postId,
-        name: user.userName,
-        createdAt: new Date(),
-      });
+      io.emit("newNotification", notification);
     }
 
     res.status(200).json(savedComment);

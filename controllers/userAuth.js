@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import nodemailer from "nodemailer";
 import { io } from "../index.js";
+import mongoose from "mongoose";
 
 //Sign up function
 export const signup = async (req, res) => {
@@ -39,6 +40,7 @@ export const signup = async (req, res) => {
       dateOfBirth,
       isDatePublic,
     });
+    const savedUser = await newUser.save();
 
     res.status(200).json(savedUser);
 
@@ -219,44 +221,42 @@ export const followUser = async (req, res) => {
       user.userFollowers = user.userFollowers.filter(
         (id) => !id.equals(loggedInUser._id)
       );
-      user.notifications.push({
+      const notification = {
+        _id: new mongoose.Types.ObjectId(),
         image: loggedInUser.profileImage,
         msg: `${loggedInUser.userName} unfollowed you!`,
         read: false,
         name: loggedInUser.userName,
         createdAt: new Date(),
-      });
+      };
 
+      user.notifications.push(notification);
       user.readNotifications = false;
       await loggedInUser.save();
       await user.save();
 
-      io.emit("newNotification", {
-        msg: `${loggedInUser.userName} unfollowed you!`,
-        image: loggedInUser.profileImage,
-        name: loggedInUser.userName,
-      });
+      io.emit("newNotification", notification);
     } else {
       // Follow
       loggedInUser.userFollows.push(user._id);
       user.userFollowers.push(loggedInUser._id);
-      user.notifications.push({
+
+      const notification = {
+        _id: new mongoose.Types.ObjectId(),
         image: loggedInUser.profileImage,
         msg: `${loggedInUser.userName} followed you!`,
         read: false,
         name: loggedInUser.userName,
         createdAt: new Date(),
-      });
+      };
+
+      user.notifications.push(notification);
 
       user.readNotifications = false;
       await loggedInUser.save();
       await user.save();
 
-      io.emit("newNotification", {
-        msg: `${loggedInUser.userName} followed you!`,
-        image: loggedInUser.profileImage,
-        name: loggedInUser.userName,
-      });
+      io.emit("newNotification", notification);
     }
 
     // Respond with updated data

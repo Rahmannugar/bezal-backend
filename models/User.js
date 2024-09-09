@@ -90,6 +90,7 @@ const userSchema = new mongoose.Schema({
       msg: String,
       read: { type: Boolean, default: false },
       name: String,
+      postUrl: String,
       createdAt: Date,
     },
   ],
