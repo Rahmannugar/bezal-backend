@@ -44,6 +44,8 @@ export const signup = async (req, res) => {
       image: newUser.profileImage,
       msg: `Welcome to bezal, ${newUser.userName}!`,
       read: false,
+      name: newUser.userName,
+      createdAt: new Date(),
     });
     const savedUser = await newUser.save();
 
@@ -235,6 +237,8 @@ export const followUser = async (req, res) => {
         image: loggedInUser.profileImage,
         msg: `${loggedInUser.userName} unfollowed you!`,
         read: false,
+        name: loggedInUser.userName,
+        createdAt: new Date(),
       });
 
       await loggedInUser.save();
@@ -243,6 +247,7 @@ export const followUser = async (req, res) => {
       io.emit("newNotification", {
         msg: `${loggedInUser.userName} unfollowed you!`,
         image: loggedInUser.profileImage,
+        name: loggedInUser.userName,
       });
     } else {
       // Follow
@@ -252,6 +257,8 @@ export const followUser = async (req, res) => {
         image: loggedInUser.profileImage,
         msg: `${loggedInUser.userName} followed you!`,
         read: false,
+        name: loggedInUser.userName,
+        createdAt: new Date(),
       });
 
       await loggedInUser.save();
@@ -260,6 +267,7 @@ export const followUser = async (req, res) => {
       io.emit("newNotification", {
         msg: `${loggedInUser.userName} followed you!`,
         image: loggedInUser.profileImage,
+        name: loggedInUser.userName,
       });
     }
 

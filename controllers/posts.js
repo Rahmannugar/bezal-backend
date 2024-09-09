@@ -151,6 +151,9 @@ export const likePost = async (req, res) => {
           image: user.profileImage,
           msg: `${user.userName} liked your post!`,
           read: false,
+          postUrl: postId,
+          name: user.userName,
+          createdAt: new Date(),
         });
 
         await user.save();
@@ -159,6 +162,8 @@ export const likePost = async (req, res) => {
         io.emit("newNotification", {
           image: user.profileImage,
           msg: `${user.userName} liked your post!`,
+          postUrl: postId,
+          name: user.userName,
         });
       }
     }
@@ -201,6 +206,9 @@ export const dislikePost = async (req, res) => {
           image: user.profileImage,
           msg: `${user.userName} disliked your post!`,
           read: false,
+          postUrl: postId,
+          name: user.userName,
+          createdAt: new Date(),
         });
 
         await user.save();
@@ -209,6 +217,8 @@ export const dislikePost = async (req, res) => {
         io.emit("newNotification", {
           image: user.profileImage,
           msg: `${user.userName} disliked your post!`,
+          postUrl: postId,
+          name: user.userName,
         });
       }
     }
@@ -250,6 +260,7 @@ export const commentPost = async (req, res) => {
         image: user.profileImage,
         msg: `${user.userName} commented on your post!`,
         read: false,
+        name: user.userName,
       });
       await post.save();
       await postAuthor.save();
@@ -257,6 +268,9 @@ export const commentPost = async (req, res) => {
       io.emit("newNotification", {
         image: user.profileImage,
         msg: `${user.userName} commented on your post!`,
+        postUrl: postId,
+        name: user.userName,
+        createdAt: new Date(),
       });
     }
 
