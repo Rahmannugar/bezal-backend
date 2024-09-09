@@ -48,20 +48,19 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
 // Socket.io connection
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
-
-  socket.on("chatMessage", (message) => {
-    io.emit("chatMessage", message);
-  });
+  //console.log("User connected:", socket.id);
 
   // user disconnect
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+   // console.log("User disconnected:", socket.id);
   });
 });
+
+export { server, io };

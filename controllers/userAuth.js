@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import nodemailer from "nodemailer";
+import { io } from "../index.js";
 
 //Sign up function
 export const signup = async (req, res) => {
@@ -39,7 +40,18 @@ export const signup = async (req, res) => {
       isDatePublic,
     });
 
+    newUser.notifications.push({
+      image: newUser.profileImage,
+      msg: `Welcome to bezal, ${newUser.userName}!`,
+      read: false,
+    });
     const savedUser = await newUser.save();
+
+    io.emit("newNotification", {
+      msg: `Welcome to bezal, ${newUser.userName}!`,
+      image: newUser.profileImage,
+    });
+
     res.status(200).json(savedUser);
 
     //error catching
@@ -219,14 +231,37 @@ export const followUser = async (req, res) => {
       user.userFollowers = user.userFollowers.filter(
         (id) => !id.equals(loggedInUser._id)
       );
+      user.notifications.push({
+        image: loggedInUser.profileImage,
+        msg: `${loggedInUser.userName} unfollowed you!`,
+        read: false,
+      });
+
+      await loggedInUser.save();
+      await user.save();
+
+      io.emit("newNotification", {
+        msg: `${loggedInUser.userName} unfollowed you!`,
+        image: loggedInUser.profileImage,
+      });
     } else {
       // Follow
       loggedInUser.userFollows.push(user._id);
       user.userFollowers.push(loggedInUser._id);
-    }
+      user.notifications.push({
+        image: loggedInUser.profileImage,
+        msg: `${loggedInUser.userName} followed you!`,
+        read: false,
+      });
 
-    await loggedInUser.save();
-    await user.save();
+      await loggedInUser.save();
+      await user.save();
+
+      io.emit("newNotification", {
+        msg: `${loggedInUser.userName} followed you!`,
+        image: loggedInUser.profileImage,
+      });
+    }
 
     // Respond with updated data
     res.status(200).json({

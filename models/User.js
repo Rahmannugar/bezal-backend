@@ -84,6 +84,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  notifications: {
+    type: Array,
+    default: [],
+  },
+  readNotifications: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);

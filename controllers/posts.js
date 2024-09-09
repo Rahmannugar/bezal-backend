@@ -1,6 +1,7 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
 import Comment from "../models/Comment.js";
+import { io } from "../index.js";
 
 //creating post
 export const createPost = async (req, res) => {
@@ -126,6 +127,7 @@ export const likePost = async (req, res) => {
 
     const post = await Post.findById(postId);
     const user = await User.findById(userId);
+    const postAuthor = await User.findById(post.userId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -141,10 +143,27 @@ export const likePost = async (req, res) => {
 
       user.likes.set(postId, true);
       user.dislikes.delete(postId);
+
+      if (postAuthor === user) {
+        return;
+      } else {
+        postAuthor.notifications.push({
+          image: user.profileImage,
+          msg: `${user.userName} liked your post!`,
+          read: false,
+        });
+
+        await user.save();
+        await postAuthor.save();
+
+        io.emit("newNotification", {
+          image: user.profileImage,
+          msg: `${user.userName} liked your post!`,
+        });
+      }
     }
 
     const updatedPost = await post.save();
-    const savedUser = await user.save();
     res.status(200).json(updatedPost);
   } catch (error) {
     console.error(error);
@@ -159,6 +178,7 @@ export const dislikePost = async (req, res) => {
 
     const post = await Post.findById(postId);
     const user = await User.findById(userId);
+    const postAuthor = await User.findById(post.userId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -174,10 +194,26 @@ export const dislikePost = async (req, res) => {
 
       user.dislikes.set(postId, true);
       user.likes.delete(postId);
-    }
+      if (postAuthor === user) {
+        return;
+      } else {
+        postAuthor.notifications.push({
+          image: user.profileImage,
+          msg: `${user.userName} disliked your post!`,
+          read: false,
+        });
 
+        await user.save();
+        await postAuthor.save();
+
+        io.emit("newNotification", {
+          image: user.profileImage,
+          msg: `${user.userName} disliked your post!`,
+        });
+      }
+    }
     const updatedPost = await post.save();
-    const savedUser = await user.save();
+
     res.status(200).json(updatedPost);
   } catch (error) {
     console.error(error);
@@ -192,6 +228,8 @@ export const commentPost = async (req, res) => {
     const { commentMessage } = req.body;
     const post = await Post.findById(postId);
     const user = await User.findById(userId);
+    const postAuthor = await User.findById(post.userId);
+
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -205,7 +243,23 @@ export const commentPost = async (req, res) => {
     const savedComment = await newComment.save();
     post.comments.unshift(savedComment);
 
-    await post.save();
+    if (postAuthor === user) {
+      return;
+    } else {
+      postAuthor.notifications.push({
+        image: user.profileImage,
+        msg: `${user.userName} commented on your post!`,
+        read: false,
+      });
+      await post.save();
+      await postAuthor.save();
+
+      io.emit("newNotification", {
+        image: user.profileImage,
+        msg: `${user.userName} commented on your post!`,
+      });
+    }
+
     res.status(200).json(savedComment);
   } catch (error) {
     console.error(error);
