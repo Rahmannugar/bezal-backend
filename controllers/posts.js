@@ -145,7 +145,7 @@ export const likePost = async (req, res) => {
       user.likes.set(postId, true);
       user.dislikes.delete(postId);
 
-      if (postAuthor === user) {
+      if (postAuthor._id.toString() === user._id.toString()) {
         return;
       } else {
         const notification = {
@@ -198,7 +198,7 @@ export const dislikePost = async (req, res) => {
 
       user.dislikes.set(postId, true);
       user.likes.delete(postId);
-      if (postAuthor === user) {
+      if (postAuthor._id.toString() === user._id.toString()) {
         return;
       } else {
         const notification = {
@@ -250,7 +250,7 @@ export const commentPost = async (req, res) => {
     const savedComment = await newComment.save();
     post.comments.unshift(savedComment);
 
-    if (postAuthor === user) {
+    if (postAuthor._id.toString() === user._id.toString()) {
       return;
     } else {
       const notification = {
