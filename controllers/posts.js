@@ -145,9 +145,7 @@ export const likePost = async (req, res) => {
       user.likes.set(postId, true);
       user.dislikes.delete(postId);
 
-      if (postAuthor._id.toString() === user._id.toString()) {
-        return;
-      } else {
+      if (postAuthor._id.toString() !== user._id.toString()) {
         const notification = {
           _id: new mongoose.Types.ObjectId(),
           image: user.profileImage,
@@ -198,9 +196,7 @@ export const dislikePost = async (req, res) => {
 
       user.dislikes.set(postId, true);
       user.likes.delete(postId);
-      if (postAuthor._id.toString() === user._id.toString()) {
-        return;
-      } else {
+      if (postAuthor._id.toString() !== user._id.toString()) {
         const notification = {
           _id: new mongoose.Types.ObjectId(),
           image: user.profileImage,
@@ -250,9 +246,7 @@ export const commentPost = async (req, res) => {
     const savedComment = await newComment.save();
     post.comments.unshift(savedComment);
 
-    if (postAuthor._id.toString() === user._id.toString()) {
-      return;
-    } else {
+    if (postAuthor._id.toString() !== user._id.toString()) {
       const notification = {
         _id: new mongoose.Types.ObjectId(),
         image: user.profileImage,
