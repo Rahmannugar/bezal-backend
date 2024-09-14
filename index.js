@@ -23,8 +23,13 @@ dotenv.config();
 // Routes
 import postRoutes from "./routes/posts.js";
 import userRoutes from "./routes/users.js";
+import conversationRoutes from "./routes/conversations.js";
+import messageRoutes from "./routes/messages.js";
+
 app.use("/posts", postRoutes);
 app.use("/", userRoutes);
+app.use("/conversations", conversationRoutes);
+app.use("/messages", messageRoutes);
 
 // MongoDB configuration
 const MONGODB_URL = process.env.MONGODB_URL;
