@@ -188,6 +188,24 @@ export const getUser = async (req, res) => {
   }
 };
 
+//get user by Id
+export const getUserById = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Send user data as a response
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // Follow or Unfollow User
 export const followUser = async (req, res) => {
   try {
