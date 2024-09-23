@@ -20,7 +20,10 @@ export const newConversation = async (req, res) => {
   });
 
   if (existingConversation) {
-    return res.status(200).json(existingConversation);
+    const populatedConversation = await Conversation.findById(
+      existingConversation._id
+    ).populate("members", "userName profileImage bio");
+    return res.status(200).json(populatedConversation);
   }
 
   const conversation = new Conversation({
@@ -28,7 +31,10 @@ export const newConversation = async (req, res) => {
   });
   try {
     const savedConversation = await conversation.save();
-    res.status(200).json(savedConversation);
+    const populatedConversation = await Conversation.findById(
+      savedConversation._id
+    ).populate("members", "userName profileImage bio");
+    res.status(200).json(populatedConversation);
   } catch (err) {
     res.status(500).json({ message: "Failed to create conversation" });
   }
