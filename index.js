@@ -10,12 +10,7 @@ import http from "http";
 // App configuration
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-    origin: "https://bezal.netlify.app",
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
 dotenv.config();
