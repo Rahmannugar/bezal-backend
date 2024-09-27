@@ -10,7 +10,13 @@ import http from "http";
 // App configuration
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://bezal.netlify.app",
+    credentials: true,
+  })
+);
+app.options("*", cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
 dotenv.config();
@@ -45,7 +51,13 @@ mongoose
 const server = http.createServer(app);
 
 // Socket.io setup
-const io = new Server(server, {});
+const io = new Server(server, {
+  cors: {
+    origin: "https://bezal.netlify.app",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 
 // Socket.io connection
 io.on("connection", (socket) => {
