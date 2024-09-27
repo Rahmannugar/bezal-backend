@@ -45,13 +45,7 @@ mongoose
 const server = http.createServer(app);
 
 // Socket.io setup
-const io = new Server(server, {
-  cors: {
-    origin: "https://bezal.netlify.app",
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
+const io = new Server(server, {});
 
 // Socket.io connection
 io.on("connection", (socket) => {
