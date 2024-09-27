@@ -16,7 +16,24 @@ app.use(
     credentials: true,
   })
 );
-app.options("*", cors());
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://bezal.netlify.app");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+
+// Handle preflight OPTIONS request
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "https://bezal.netlify.app");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.sendStatus(200);
+});
+
 app.use(cookieParser());
 app.use(bodyParser.json());
 dotenv.config();
