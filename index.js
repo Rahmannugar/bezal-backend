@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 
 app.use(function (req, res, next) {
-  const allowedOrigins = ["https://bezal.netlify.app"];
+  const allowedOrigins = ["https://bezal-frontend.onrender.com"];
 
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
@@ -77,7 +77,7 @@ const server = http.createServer(app);
 // Socket.io setup
 const io = new Server(server, {
   cors: {
-    origin: "https://bezal.netlify.app",
+    origin: "https://bezal-frontend.onrender.com",
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   },
