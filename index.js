@@ -1,7 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
-import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
@@ -10,26 +9,35 @@ import http from "http";
 // App configuration
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-    origin: "https://bezal.netlify.app",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-app.options("*", cors());
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://bezal.netlify.app");
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PATCH, DELETE, OPTIONS"
-  );
+app.use(function (req, res, next) {
+  const allowedOrigins = ["https://bezal.netlify.app"];
+
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
+  // Allow necessary headers
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
+
+  // Allow credentials
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  // Allow specific methods including PATCH
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+  );
+
+  // Handle preflight request
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
   next();
 });
 
@@ -70,7 +78,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "https://bezal.netlify.app",
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   },
 });
