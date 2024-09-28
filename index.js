@@ -14,8 +14,11 @@ app.use(
   cors({
     origin: "https://bezal.netlify.app",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+app.options("*", cors());
 
 app.use(cookieParser());
 app.use(bodyParser.json());
