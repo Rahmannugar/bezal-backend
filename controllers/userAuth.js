@@ -80,7 +80,7 @@ export const signin = async (req, res) => {
     // Creating user session (setting the cookie)
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "None",
       maxAge: 3 * 60 * 60 * 1000, // 3 hours
     });
